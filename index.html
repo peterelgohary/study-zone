@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>  ركن الدحيحة | Level Up Your Study  </title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Subtle Background Gradients */
+        .bg-mesh-dark {
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+        }
+
+        .bg-mesh-light {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Progress Circle Transition */
+        #progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-mesh-dark dark:text-slate-100 text-slate-800 min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+    <!-- TOP NAVBAR & HEADER -->
+    <header class="w-full border-b border-slate-200/50 dark:border-slate-800/60 glass-card bg-white/60 dark:bg-slate-900/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- App Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-brand-500/10 text-brand-500 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight leading-tight">  ركن الدحيحة</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Level Up Your Study </p>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition duration-200" title="تبديل الوضع">
+                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon text-lg hidden"></i>
+                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun text-lg text-amber-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- DYNAMIC BACKGROUND OVERLAY CONTAINER -->
+    <div id="custom-bg-overlay" class="fixed inset-0 bg-cover bg-center transition-all duration-500 -z-10 opacity-30 pointer-events-none"></div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        
+        <!-- SESSION PROGRESS DASHBOARD BAR -->
+        <div class="mb-8 p-4 bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl glass-card shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">مستوى إنجاز الجلسة الحالية</h3>
+                    <p id="progress-text" class="text-xs text-slate-500 dark:text-slate-400">0 من 0 مهام مكتملة (0%)</p>
+                </div>
+            </div>
+            <div class="w-full sm:w-1/2 bg-slate-200 dark:bg-slate-800 h-3 rounded-full overflow-hidden p-0.5">
+                <div id="session-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500 w-0"></div>
+            </div>
+        </div>
+
+        <!-- GRID LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: Pomodoro & To-Do List (7 Columns) -->
+            <div class="lg:col-span-7 flex flex-col gap-8">
+                
+                <!-- 1. POMODORO TIMER CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 glass-card shadow-xl relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-brand-500 text-xl"></i>
+                            <h2 class="text-xl font-bold">عداد وقت المذاكرة </h2>
+                        </div>
+                        <span id="timer-status-badge" class="text-xs px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 font-semibold border border-brand-500/20">
+                            جلسة تركيز
+                        </span>
+                    </div>
+
+                    <!-- Mode Selectors -->
+                    <div class="flex justify-center p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-8 max-w-md mx-auto gap-1">
+                        <button id="btn-work" onclick="setTimerMode('work')" class="flex-1 py-2 text-sm font-semibold rounded-xl transition duration-200 bg-brand-500 text-white shadow-md">
+                            جلسة عمل (25د)
+                        </button>
+                        <button id="btn-shortBreak" onclick="setTimerMode('shortBreak')" class="flex-1 py-2 text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                            استراحة قصيرة (5د)
+                        </button>
+                        <button id="btn-longBreak" onclick="setTimerMode('longBreak')" class="flex-1 py-2 text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                            استراحة طويلة (15د)
+                        </button>
+                    </div>
+
+                    <!-- Circular Clock Display -->
+                    <div class="relative flex items-center justify-center my-4">
+                        <svg class="w-64 h-64 sm:w-72 sm:h-72">
+                            <circle class="text-slate-200 dark:text-slate-800" stroke-width="10" stroke="currentColor" fill="transparent" r="110" cx="144" cy="144"/>
+                            <circle id="progress-ring-circle" class="text-brand-500" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="110" cx="144" cy="144"/>
+                        </svg>
+                        
+                        <div class="absolute flex flex-col items-center justify-center">
+                            <span id="timer-display" class="text-5xl sm:text-6xl font-black tracking-tight font-mono">25:00</span>
+                            <span id="timer-mode-label" class="text-sm text-slate-500 dark:text-slate-400 mt-2">حان وقت الإنجاز 🎯</span>
+                        </div>
+                    </div>
+
+                    <!-- Break Tip Suggestion Container -->
+                    <div id="break-suggestion-box" class="hidden my-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center text-xs text-amber-600 dark:text-amber-400 font-semibold">
+                        <i class="fa-solid fa-mug-hot ml-1"></i> <span id="break-tip-text">مقترح الاستراحة: اشرب كوب ماء وافرد ظهرك!</span>
+                    </div>
+
+                    <!-- Timer Control Buttons -->
+                    <div class="flex items-center justify-center gap-4 mt-6">
+                        <button id="start-btn" onclick="toggleTimer()" class="w-36 py-3.5 bg-brand-500 hover:bg-brand-600 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/25 transition duration-200 flex items-center justify-center gap-2">
+                            <i id="start-icon" class="fa-solid fa-play"></i>
+                            <span id="start-btn-text">بدء</span>
+                        </button>
+                        <button onclick="resetTimer()" class="p-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition duration-200" title="إعادة ضبط">
+                            <i class="fa-solid fa-rotate-right text-lg"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 2. SESSION TO-DO LIST CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 glass-card shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-brand-500 text-xl"></i>
+                                <h2 class="text-xl font-bold"> فاضية ورايقة...حط المذاكرة بتاعت انهارده ونخلصهم ف السريع</h2>
+                            </div>
+                            <span class="text-xs text-slate-400 dark:text-slate-500">
+                                محفوظة تلقائياً على جهازك
+                            </span>
+                        </div>
+
+                        <form onsubmit="addTask(event)" class="flex gap-2 mb-6">
+                            <input type="text" id="task-input" placeholder="اكتب مهام المذاكرة هنا..." required class="flex-1 px-4 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                            <button type="submit" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 active:scale-95 text-white font-bold rounded-2xl shadow-md transition flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>إضافة</span>
+                            </button>
+                        </form>
+
+                        <ul id="task-list" class="space-y-3 max-h-60 overflow-y-auto pr-1"></ul>
+
+                        <div id="empty-tasks-msg" class="text-center py-8 text-slate-400 dark:text-slate-500">
+                            <i class="fa-solid fa-clipboard-list text-3xl mb-2 opacity-50"></i>
+                            <p class="text-sm">لا توجد مهام حالياً. أضف أهدافك لهذه الجلسة!</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+                        <span id="task-stats">0 مهام</span>
+                        <button onclick="clearCompletedTasks()" class="hover:text-red-500 transition">مسح المهام المكتملة</button>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Notes, Calculator, Countdown & Tips (5 Columns) -->
+            <div class="lg:col-span-5 flex flex-col gap-8">
+                
+                <!-- 3. QUICK STUDY NOTES CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 glass-card shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-brand-500 text-xl"></i>
+                            <h2 class="text-xl font-bold">تدوين الملاحظات والتركات</h2>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copyNotes()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-500 hover:text-white transition text-xs" title="نسخ النص">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                            <button onclick="clearNotes()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-red-500 hover:text-white transition text-xs" title="مسح الكل">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <textarea id="notes-textarea" oninput="saveAndStatsNotes()" placeholder="سجل النقاط المهمة، التركات، أو النقاط المنجزة هنا أثناء المذاكرة... (بيتحفظ لوحده)" class="w-full h-36 p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition resize-none"></textarea>
+
+                    <div class="mt-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+                        <span id="notes-char-count">0 حرف</span>
+                        <span id="notes-word-count">0 كلمة</span>
+                    </div>
+                </section>
+
+                <!-- 4. QUICK CALCULATOR CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 glass-card shadow-xl">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-calculator text-brand-500 text-xl"></i>
+                        <h2 class="text-lg font-bold">آلة حاسبة دراسية سريعة</h2>
+                    </div>
+
+                    <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 mb-3">
+                        <input type="text" id="calc-display" readonly value="0" class="w-full bg-transparent text-right text-2xl font-mono font-bold text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 text-sm font-bold">
+                        <button onclick="calcClear()" class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition">C</button>
+                        <button onclick="calcAppend('/')" class="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white transition">÷</button>
+                        <button onclick="calcAppend('*')" class="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white transition">×</button>
+                        <button onclick="calcAppend('-')" class="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white transition">-</button>
+
+                        <button onclick="calcAppend('7')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">7</button>
+                        <button onclick="calcAppend('8')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">8</button>
+                        <button onclick="calcAppend('9')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">9</button>
+                        <button onclick="calcAppend('+')" class="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white transition">+</button>
+
+                        <button onclick="calcAppend('4')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">4</button>
+                        <button onclick="calcAppend('5')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">5</button>
+                        <button onclick="calcAppend('6')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">6</button>
+                        <button onclick="calcEqual()" class="row-span-2 p-2.5 rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition flex items-center justify-center text-lg">=</button>
+
+                        <button onclick="calcAppend('1')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">1</button>
+                        <button onclick="calcAppend('2')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">2</button>
+                        <button onclick="calcAppend('3')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">3</button>
+
+                        <button onclick="calcAppend('0')" class="col-span-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">0</button>
+                        <button onclick="calcAppend('.')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">.</button>
+                    </div>
+                </section>
+
+                <!-- 5. STUDY TIPS GENERATOR CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 glass-card shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500 text-xl"></i>
+                            <h2 class="text-lg font-bold">نصائح ومُحفزات سريعة</h2>
+                        </div>
+                        <button onclick="generateRandomTip()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-white transition text-xs flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-shuffle"></i>
+                            <span>تغيير</span>
+                        </button>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-slate-800 dark:text-slate-200 text-sm">
+                        <p id="tip-text" class="italic">"ابدأ بالصعب أولاً: تكون طاقتك الذهنية في أعلى مستوياتها في بداية الجلسة."</p>
+                    </div>
+                </section>
+
+                <!-- 6. EXAM COUNTDOWN CARD -->
+                <section class="bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 glass-card shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-hourglass-half text-brand-500 text-xl"></i>
+                                <h2 class="text-lg font-bold">العداد التنازلي للامتحانات</h2>
+                            </div>
+                            <span class="text-xs px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-500 font-bold border border-brand-500/20">
+                                14 نوفمبر
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-2 text-center my-2">
+                            <div class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+                                <span id="cd-days" class="block text-xl font-black text-brand-500 font-mono">00</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">يوم</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+                                <span id="cd-hours" class="block text-xl font-black text-brand-500 font-mono">00</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">ساعة</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+                                <span id="cd-minutes" class="block text-xl font-black text-brand-500 font-mono">00</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">دقيقة</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+                                <span id="cd-seconds" class="block text-xl font-black text-brand-500 font-mono">00</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">ثانية</span>
+                            </div>
+                        </div>
+
+                        <p id="exam-status-msg" class="text-xs text-center text-slate-500 dark:text-slate-400 mt-3 font-semibold"></p>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. 🖼️ رابط الصورة الخاص بالخلفية
+           ========================================================================== */
+        const MY_BACKGROUND_IMAGE = "WhatsApp.jpeg";
+        document.getElementById('custom-bg-overlay').style.backgroundImage = `url('${MY_BACKGROUND_IMAGE}')`;
+
+        /* ==========================================================================
+           2. DARK / LIGHT THEME TOGGLE LOGIC
+           ========================================================================== */
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+                document.body.classList.remove('bg-mesh-light');
+                document.body.classList.add('bg-mesh-dark');
+            } else {
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+                document.body.classList.remove('bg-mesh-dark');
+                document.body.classList.add('bg-mesh-light');
+            }
+        });
+
+        /* ==========================================================================
+           3. POMODORO TIMER LOGIC
+           ========================================================================== */
+        let timerInterval = null;
+        let isRunning = false;
+        let currentMode = 'work'; // 'work', 'shortBreak', 'longBreak'
+        
+        const modeDurations = {
+            work: 25 * 60,
+            shortBreak: 5 * 60,
+            longBreak: 15 * 60
+        };
+        
+        let timeLeft = modeDurations.work;
+
+        // Progress Ring SVG Config
+        const circle = document.getElementById('progress-ring-circle');
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const formatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = formatted;
+
+            const total = modeDurations[currentMode];
+            const percent = ((total - timeLeft) / total) * 100;
+            setProgress(percent);
+        }
+
+        function setTimerMode(mode) {
+            pauseTimer();
+            currentMode = mode;
+            timeLeft = modeDurations[mode];
+
+            ['work', 'shortBreak', 'longBreak'].forEach(m => {
+                const btn = document.getElementById(`btn-${m}`);
+                if (m === mode) {
+                    btn.className = "flex-1 py-2 text-sm font-semibold rounded-xl transition duration-200 bg-brand-500 text-white shadow-md";
+                } else {
+                    btn.className = "flex-1 py-2 text-sm font-semibold rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                }
+            });
+
+            const badge = document.getElementById('timer-status-badge');
+            const label = document.getElementById('timer-mode-label');
+            if (mode === 'work') {
+                badge.innerText = " عزل تام";
+                label.innerText = "حان وقت الإنجاز 🎯";
+            } else if (mode === 'shortBreak') {
+                badge.innerText = "استراحة قصيرة";
+                label.innerText = "خذ نفسًا عميقًا ☕";
+            } else {
+                badge.innerText = "استراحة طويلة";
+                label.innerText = "استرح وواصل لاحقًا 🌟";
+            }
+
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            document.getElementById('start-btn-text').innerText = 'إيقاف مؤقت';
+            document.getElementById('start-icon').className = 'fa-solid fa-pause';
+
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                } else {
+                    playChimeSound();
+                    pauseTimer();
+                    alert("انتهى الوقت المحدد للجلسة!");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('start-btn-text').innerText = 'بدء';
+            document.getElementById('start-icon').className = 'fa-solid fa-play';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = modeDurations[currentMode];
+            updateTimerDisplay();
+        }
+
+        function playChimeSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 1);
+            } catch (e) {
+                console.log('Audio Context Error:', e);
+            }
+        }
+
+        /* ==========================================================================
+           4. SESSION TO-DO LIST LOGIC (WITH LOCALSTORAGE)
+           ========================================================================== */
+        let tasks = JSON.parse(localStorage.getItem('study_tasks')) || [];
+
+        function saveTasksToStorage() {
+            localStorage.setItem('study_tasks', JSON.stringify(tasks));
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            const emptyMsg = document.getElementById('empty-tasks-msg');
+            const stats = document.getElementById('task-stats');
+
+            list.innerHTML = '';
+
+            if (tasks.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+            }
+
+            let completedCount = 0;
+
+            tasks.forEach((task, index) => {
+                if (task.completed) completedCount++;
+
+                const li = document.createElement('li');
+                li.className = `p-3.5 rounded-2xl bg-slate-100/70 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-3 transition duration-200 ${task.completed ? 'opacity-60' : ''}`;
+                
+                li.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1" onclick="toggleTask(${index})">
+                        <div class="w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition ${task.completed ? 'bg-brand-500 border-brand-500 text-white' : 'border-slate-300 dark:border-slate-600'}">
+                            ${task.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        </div>
+                        <span class="text-sm truncate ${task.completed ? 'line-through text-slate-400 dark:text-slate-500' : ''}">${escapeHtml(task.text)}</span>
+                    </div>
+                    <button onclick="deleteTask(${index})" class="text-slate-400 hover:text-red-500 transition p-1" title="حذف">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+
+            stats.innerText = `${completedCount} من ${tasks.length} مهام مكتملة`;
+            updateSessionProgress();
+            saveTasksToStorage();
+        }
+
+        function addTask(event) {
+            event.preventDefault();
+            const input = document.getElementById('task-input');
+            const text = input.value.trim();
+            if (text) {
+                tasks.push({ text: text, completed: false });
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function clearCompletedTasks() {
+            tasks = tasks.filter(t => !t.completed);
+            renderTasks();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        // تحميل المهام أول ما الصفحة تفتح
+        renderTasks();
+
+        /* ==========================================================================
+           5. EXAM COUNTDOWN LOGIC (Target: Nov 14, 2026)
+           ========================================================================== */
+        let targetExamDate = new Date('2026-11-14T09:00:00');
+
+        function calculateCountdown() {
+            const now = new Date();
+            const difference = targetExamDate - now;
+
+            const statusMsg = document.getElementById('exam-status-msg');
+
+            if (difference <= 0) {
+                document.getElementById('cd-days').innerText = '00';
+                document.getElementById('cd-hours').innerText = '00';
+                document.getElementById('cd-minutes').innerText = '00';
+                document.getElementById('cd-seconds').innerText = '00';
+                if (statusMsg) statusMsg.innerText = "حان موعد الامتحانات! بالتوفيق للجميع 🎉";
+                return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('cd-minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('cd-seconds').innerText = seconds.toString().padStart(2, '0');
+
+            if (statusMsg) {
+                statusMsg.innerText = `متبقي على موعد امتحان الميدترم  (14 نوفمبر)`;
+            }
+        }
+
+        calculateCountdown();
+        setInterval(calculateCountdown, 1000);
+
+        /* ==========================================================================
+           6. SESSION PROGRESS BAR
+           ========================================================================== */
+        function updateSessionProgress() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            document.getElementById('progress-text').innerText = `${completed} من ${total} مهام مكتملة (${percent}%)`;
+            document.getElementById('session-progress-bar').style.width = `${percent}%`;
+        }
+
+        /* ==========================================================================
+           7. QUICK NOTES LOGIC (WITH LOCALSTORAGE AUTO-SAVE)
+           ========================================================================== */
+        const notesTextarea = document.getElementById('notes-textarea');
+
+        // استرجاع الملاحظات المحفوظة عند فتح الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedNotes = localStorage.getItem('study_notes');
+            if (savedNotes) {
+                notesTextarea.value = savedNotes;
+                updateNotesStats();
+            }
+        });
+
+        function saveAndStatsNotes() {
+            const text = notesTextarea.value;
+            localStorage.setItem('study_notes', text); // الحفظ التلقائي
+            updateNotesStats();
+        }
+
+        function updateNotesStats() {
+            const text = notesTextarea.value;
+            const chars = text.length;
+            const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+
+            document.getElementById('notes-char-count').innerText = `${chars} حرف`;
+            document.getElementById('notes-word-count').innerText = `${words} كلمة`;
+        }
+
+        function clearNotes() {
+            notesTextarea.value = '';
+            localStorage.removeItem('study_notes');
+            updateNotesStats();
+        }
+
+        function copyNotes() {
+            notesTextarea.select();
+            document.execCommand('copy');
+            alert("تم نسخ الملاحظات إلى الحافظة!");
+        }
+
+        /* ==========================================================================
+           8. QUICK CALCULATOR LOGIC
+           ========================================================================== */
+        let calcVal = "0";
+
+        function updateCalcDisplay() {
+            document.getElementById('calc-display').value = calcVal;
+        }
+
+        function calcAppend(val) {
+            if (calcVal === "0" && val !== ".") {
+                calcVal = val;
+            } else {
+                calcVal += val;
+            }
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            calcVal = "0";
+            updateCalcDisplay();
+        }
+
+        function calcEqual() {
+            try {
+                calcVal = String(Function(`'use strict'; return (${calcVal})`)());
+            } catch (e) {
+                calcVal = "خطأ";
+            }
+            updateCalcDisplay();
+        }
+
+        /* ==========================================================================
+           9. STUDY TIPS GENERATOR
+           ========================================================================== */
+        const studyTipsList = [
+            "ابدأ بالصعب أولاً: تكون طاقتك الذهنية في أعلى مستوياتها في بداية الجلسة.",
+            "تقنية فاينمان: اشرح المفهوم لنفسك بصوت عالٍ وكأنك تشرحه لطفل صغير لتتأكد من فهمه.",
+            "ابتعد عن الهاتف: وضع الهاتف في غرفة أخرى يزيد تركيزك بنسبة تصل إلى 40%.",
+            "التكرار المتباعد: مراجعة المعلومة بعد يوم، ثم 3 أيام، يثبتها في الذاكرة طويلة المدى.",
+            "اكتب بيدك: التدوين اليدوي يحفز مناطق مختلفة في الدماغ ويساعد على الحفظ السريع."
+        ];
+
+        function generateRandomTip() {
+            const tipText = document.getElementById('tip-text');
+            const random = studyTipsList[Math.floor(Math.random() * studyTipsList.length)];
+            tipText.innerText = `"${random}"`;
+        }
+    </script>
+</body>
+</html>
